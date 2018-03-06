@@ -1,0 +1,9 @@
+{
+ "services": [
+ {
+  "name": "web"
+ },
+ {
+  "name": "db"
+ }]
+}
