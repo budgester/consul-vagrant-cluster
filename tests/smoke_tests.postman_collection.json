@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "Smoke tests for vagrant-deployed VM cluster",
-		"_postman_id": "067c84e7-2ff7-4f2f-b626-d0ee62137a96",
+		"_postman_id": "34049c12-c772-48be-a4e6-8f248bfe2cb4",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -26,7 +26,10 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "192.168.99.100:8500/v1/kv/test_key",
 					"host": [
@@ -42,7 +45,66 @@
 						"test_key"
 					]
 				},
-				"description": ""
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Get the catalog of Consul nodes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "afc0f925-09b7-463b-8e21-1ede247daed8",
+						"type": "text/javascript",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var three_node_catalog_schema = {",
+							"  \"type\": \"array\",",
+							"  \"minItems\": 3,",
+							"  \"maxItems\": 3,",
+							"  \"items\": {",
+							"    \"type\": \"object\"",
+							"  }",
+							"};",
+							"",
+							"pm.test('Catalog shows 3 nodes', function() {",
+							"  var result = tv4.validate(pm.response.json(), three_node_catalog_schema) ",
+							"  // pm.expect(result).to.be.true;",
+							"  pm.expect(result).to.be.true;",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/catalog/nodes",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"catalog",
+						"nodes"
+					]
+				},
+				"description": null
 			},
 			"response": []
 		}
