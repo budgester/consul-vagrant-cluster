@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
         "server": true,
         "ui": true,
         "advertise_addr": "#{clientIp}",
-        "client_addr": "#{clientIp}",
+        "client_addr": "#{clientIp} 127.0.0.1",
         "retry_join": ["#{serverIp}"],
         "data_dir": "/tmp/consul",
         "bootstrap_expect": 3
