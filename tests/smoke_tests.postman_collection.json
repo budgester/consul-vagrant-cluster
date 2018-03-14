@@ -1,0 +1,50 @@
+{
+	"info": {
+		"name": "Smoke tests for vagrant-deployed VM cluster",
+		"_postman_id": "067c84e7-2ff7-4f2f-b626-d0ee62137a96",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get the value of test_key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c674572a-5bf7-4d37-b764-d37fd2bc007a",
+						"type": "text/javascript",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/kv/test_key",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"kv",
+						"test_key"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
