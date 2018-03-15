@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "Smoke tests for vagrant-deployed VM cluster",
-		"_postman_id": "067c84e7-2ff7-4f2f-b626-d0ee62137a96",
+		"_postman_id": "34049c12-c772-48be-a4e6-8f248bfe2cb4",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -61,7 +61,7 @@
 						"nodes"
 					]
 				},
-				"description": ""
+				"description": null
 			},
 			"response": []
 		},
@@ -105,7 +105,10 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "192.168.99.100:8500/v1/kv/{{key_to_check}}",
 					"host": [
@@ -121,7 +124,7 @@
 						"{{key_to_check}}"
 					]
 				},
-				"description": ""
+				"description": null
 			},
 			"response": []
 		},
@@ -164,7 +167,7 @@
 						"{{key_to_check}}"
 					]
 				},
-				"description": ""
+				"description": null
 			},
 			"response": []
 		},
@@ -174,7 +177,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ee719a9e-83d5-4545-9cd2-8e58cb089c11",
+						"id": "2f856b8e-843f-402d-a1f8-735825ec250c",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response is ok\", function () {",
@@ -183,9 +186,123 @@
 							"",
 							"pm.test(\"Value retrieved is as set\", function () {",
 							"  var result = pm.response.text()",
-							"  pm.expect(result).to.include(pm.globals.get(\"value_to_check_for\"))",
+							"  // pm.expect(result).to.equal(pm.globals.get(\"value_to_check_for\"))",
+							"  pm.expect(pm.globals.get(\"value_to_check_for\")).to.include(result)",
 							"});",
 							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/kv/{{key_to_check}}?raw=true",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"kv",
+						"{{key_to_check}}"
+					],
+					"query": [
+						{
+							"key": "raw",
+							"value": "true",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Delete the test key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c674572a-5bf7-4d37-b764-d37fd2bc007a",
+						"type": "text/javascript",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{value_to_check_for}}"
+				},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/kv/{{key_to_check}}",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"kv",
+						"{{key_to_check}}"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Check the test key does not exist Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "217aaf7e-2555-4a39-831e-a9b80ba9aa4d",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Check we cannot retrieve unset key\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4147fb3c-6b61-4b07-8702-ed8afa3fcaed",
+						"type": "text/javascript",
+						"exec": [
+							"function uuidv4() {",
+							"  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
+							"    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+							"    return v.toString(16);",
+							"  });",
+							"}",
+							"",
+							"pm.globals.set(\"key_to_check\", uuidv4());",
+							"pm.globals.set(\"value_to_check_for\", uuidv4());",
+							"",
+							"console.log(\"Checking key \", pm.globals.get(\"key_to_check\"))"
 						]
 					}
 				}
@@ -212,7 +329,7 @@
 						"{{key_to_check}}"
 					]
 				},
-				"description": ""
+				"description": null
 			},
 			"response": []
 		}
