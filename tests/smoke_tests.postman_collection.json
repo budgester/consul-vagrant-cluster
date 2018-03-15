@@ -7,7 +7,126 @@
 	},
 	"item": [
 		{
-			"name": "Get the value of test_key",
+			"name": "Get the catalog of Consul nodes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "afc0f925-09b7-463b-8e21-1ede247daed8",
+						"type": "text/javascript",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var three_node_catalog_schema = {",
+							"  \"type\": \"array\",",
+							"  \"minItems\": 3,",
+							"  \"maxItems\": 3,",
+							"  \"items\": {",
+							"    \"type\": \"object\"",
+							"  }",
+							"};",
+							"",
+							"pm.test('Catalog shows 3 nodes', function() {",
+							"  var result = tv4.validate(pm.response.json(), three_node_catalog_schema) ",
+							"  // pm.expect(result).to.be.true;",
+							"  pm.expect(result).to.be.true;",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/catalog/nodes",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"catalog",
+						"nodes"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Check the test key does not exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "217aaf7e-2555-4a39-831e-a9b80ba9aa4d",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Check we cannot retrieve unset key\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4147fb3c-6b61-4b07-8702-ed8afa3fcaed",
+						"type": "text/javascript",
+						"exec": [
+							"function uuidv4() {",
+							"  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
+							"    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+							"    return v.toString(16);",
+							"  });",
+							"}",
+							"",
+							"pm.globals.set(\"key_to_check\", uuidv4());",
+							"pm.globals.set(\"value_to_check_for\", uuidv4());",
+							"",
+							"console.log(\"Checking key \", pm.globals.get(\"key_to_check\"))"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/kv/{{key_to_check}}",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"kv",
+						"{{key_to_check}}"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Set the test key",
 			"event": [
 				{
 					"listen": "test",
@@ -24,11 +143,14 @@
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "PUT",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": "{{value_to_check_for}}"
+				},
 				"url": {
-					"raw": "192.168.99.100:8500/v1/kv/test_key",
+					"raw": "192.168.99.100:8500/v1/kv/{{key_to_check}}",
 					"host": [
 						"192",
 						"168",
@@ -39,7 +161,55 @@
 					"path": [
 						"v1",
 						"kv",
-						"test_key"
+						"{{key_to_check}}"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Check the test key has been correctly set to the test value",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ee719a9e-83d5-4545-9cd2-8e58cb089c11",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Value retrieved is as set\", function () {",
+							"  var result = pm.response.text()",
+							"  pm.expect(result).to.include(pm.globals.get(\"value_to_check_for\"))",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "192.168.99.100:8500/v1/kv/{{key_to_check}}",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"100"
+					],
+					"port": "8500",
+					"path": [
+						"v1",
+						"kv",
+						"{{key_to_check}}"
 					]
 				},
 				"description": ""
